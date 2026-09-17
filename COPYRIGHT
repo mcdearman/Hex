@@ -1,0 +1,9 @@
+hex (the Meadow package) is a port of the Rust crate hex
+(https://github.com/KokaKiwi/rust-hex), version 0.4.3, to Meadow. Its test
+cases are generated from that crate, and its code is translated from the
+crate's source.
+
+The crate is Copyright (c) 2013-2014 The Rust Project Developers and
+(c) 2015-2020 The rust-hex Developers, and is dual-licensed under the Apache
+License, Version 2.0, and the MIT license. So is this port, at your option:
+see LICENSE-APACHE and LICENSE-MIT.

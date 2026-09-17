@@ -1,0 +1,100 @@
+-- The port against the crate: every case in `Cases.mw`, whose expected results
+-- came from calling hex itself, plus a few examples.
+--
+-- Every declaration carries `@cfg(test)`, as the tests are no part of the
+-- package.
+
+@cfg(test)
+use Std.Test (assertEq)
+@cfg(test)
+use Std.Collections.Vector as V
+@cfg(test)
+use Std.St as St
+@cfg(test)
+use hex.Cases (cases)
+@cfg(test)
+use hex.Hex
+
+@cfg(test)
+fun digit i = toInt (stringByteAt cases i) - 48
+
+@cfg(test)
+fun num i n =
+  let rec go k acc = if k >= n then acc else go (k + 1) (acc * 64 + digit (i + k)) in
+  (go 0 0, i + n)
+
+@cfg(test)
+fun str i =
+  let len = fst (num i 3) in
+  (stringSlice cases (i + 3) (i + 3 + len), i + 3 + len)
+
+@cfg(test)
+fun hexValue c = if c <= 57 then c - 48 else c - 87
+
+-- Bytes from their hex digits, independently of the package.
+@cfg(test)
+fun unhex s =
+  runSt (\() ->
+    let n = stringByteLength s / 2 in
+    let buf = St.newArray n (toUInt8 0) in
+    let at = \i -> hexValue (toInt (stringByteAt s i)) in
+    let _ = St.forRange 0 n (\k -> St.set buf k (toUInt8 (at (2 * k) * 16 + at (2 * k + 1)))) in
+    St.freeze buf)
+
+-- A result at `i` as text, and where it ends.
+@cfg(test)
+fun readResult i =
+  let ok = num i 1 in
+  let v = str (snd ok) in
+  ((if fst ok == 1 then "ok " else "error ") ++ fst v, snd v)
+
+@cfg(test)
+fun showResult r shown =
+  match r with
+  | Ok v -> "ok " ++ shown v
+  | Err e -> "error " ++ errorMessage e
+
+@cfg(test)
+fun runCase i =
+  let kind = fst (num i 1) in
+  if kind == 0
+  then
+    let input = str (i + 1) in
+    let lower = str (snd input) in
+    let upper = str (snd lower) in
+    let size = num (snd upper) 2 in
+    let sliced = readResult (snd size) in
+    let b = unhex (fst input) in
+    let want = [fst lower, fst upper, fst sliced] in
+    let got = [encode b, encodeUpper b, showResult (encodeToSlice b (fst size)) (\s -> s)] in
+    (fst input, want, got, snd sliced)
+  else
+    let input = str (i + 1) in
+    let decoded = readResult (snd input) in
+    let size = num (snd decoded) 2 in
+    let sliced = readResult (snd size) in
+    let b = unhex (fst input) in
+    let want = [fst decoded, fst sliced] in
+    let got = [showResult (decodeBytes b) encode, showResult (decodeToSlice b (fst size)) encode] in
+    (fst input, want, got, snd sliced)
+
+@cfg(test)
+fun check i bad =
+  if i >= stringByteLength cases
+  then bad
+  else
+    match runCase i with
+    | (input, expected, got, next) ->
+        check next (if expected == got then bad else V.pushBack bad (input, expected, got))
+
+-- Failures list (input, expected, actual).
+@cfg(test)
+@test fun resultsMatchTheCrate () =
+  assertEq (V.take (check 0 V.empty) 3) [] "cases where the port and hex differ"
+
+@cfg(test)
+@test fun examples () =
+  let a = assertEq (encodeString "kiwi") "6b697769" "encode" in
+  let b = assertEq (showResult (decode "6b697769") encode) "ok 6b697769" "decode" in
+  let c = assertEq (showResult (decode "6b69776") encode) "error Odd number of digits" "odd" in
+  assertEq (showResult (decode "zz") encode) "error Invalid character 'z' at position 0" "invalid"
