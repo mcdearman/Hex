@@ -11,9 +11,9 @@ use Std.Collections.Vector as V
 @cfg(test)
 use Std.St as St
 @cfg(test)
-use hex.Cases (cases)
+use Hex.Cases (cases)
 @cfg(test)
-use hex.Hex
+use Hex.Hex
 
 @cfg(test)
 fun digit i = toInt (stringByteAt cases i) - 48

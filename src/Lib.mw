@@ -1,7 +1,7 @@
 -- hex: bytes as hexadecimal text and back. A port of Rust's `hex` crate,
 -- version 0.4.3.
 --
---   use hex (encodeString, decode)
+--   use Hex (encodeString, decode)
 --
 --   encodeString "kiwi"  -- "6b697769"
 --   decode "6b697769"    -- Ok #[107, 105, 119, 105]
@@ -13,4 +13,4 @@ mod Cases
 @cfg(test)
 mod Tests
 
-@pub use hex.Hex
+@pub use Hex.Hex

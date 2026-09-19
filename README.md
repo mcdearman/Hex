@@ -9,13 +9,13 @@ This package is a port of Rust's [`hex`](https://github.com/KokaKiwi/rust-hex)
 ## Install
 
 ```sh
-meadow add mcdearman/meadow-hex
+meadow add mcdearman/MeadowHex
 ```
 
 ## Use
 
 ```meadow
-use hex (encodeString, decode, errorMessage)
+use Hex (encodeString, decode, errorMessage)
 
 def main =
   ( encodeString "kiwi",               -- "6b697769"

@@ -6,7 +6,7 @@
 -- Apache-2.0 or MIT: see COPYRIGHT.
 
 use Std.St as St
-use hex.Tables (quotedBytes)
+use Hex.Tables (quotedBytes)
 
 @pub data FromHexError =
   -- A byte that is not a hex digit, taken as a character, and where it is.
