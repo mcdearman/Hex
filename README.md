@@ -9,7 +9,7 @@ This package is a port of Rust's [`hex`](https://github.com/KokaKiwi/rust-hex)
 ## Install
 
 ```sh
-meadow add mcdearman/MeadowHex
+meadow add mcdearman/Hex
 ```
 
 ## Use
